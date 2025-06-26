@@ -1,0 +1,382 @@
+<!DOCTYPE html><html lang="en" class="h-full"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badminton Coach AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@9.1.2/marked.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                        'primary-dark': '#4C4BC9'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors">
+    <div class="min-h-full">
+        <!-- Header -->
+        <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <h1 class="text-2xl font-bold text-primary">🏸 Badminton Coach AI</h1>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        Upload • Analyze • Improve
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="space-y-8">
+                <!-- Hero Section -->
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+                        Improve Your Badminton Game
+                    </h2>
+                    <p class="mt-4 text-lg text-gray-600 dark:text-gray-300">
+                        Upload a video of your badminton gameplay and get AI-powered analysis and personalized improvement suggestions.
+                    </p>
+                </div>
+
+                <!-- Upload Section -->
+                <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Upload Your Badminton Video</h3>
+                    
+                    <!-- File Upload Area -->
+                    <div id="uploadArea" class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-primary transition-colors cursor-pointer">
+                        <div id="uploadContent">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                            <div class="mt-4">
+                                <label for="videoInput" class="cursor-pointer">
+                                    <span class="mt-2 block text-sm font-medium text-gray-900 dark:text-white">
+                                        Click to upload or drag and drop
+                                    </span>
+                                    <span class="mt-1 block text-sm text-gray-500 dark:text-gray-400">
+                                        MP4, MOV, AVI up to 100MB
+                                    </span>
+                                </label>
+                                <input id="videoInput" type="file" class="hidden" accept="video/*">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Video Preview -->
+                    <div id="videoPreview" class="mt-6 hidden">
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-white">Video Preview</h4>
+                                <button id="removeVideo" class="text-red-600 hover:text-red-800 text-sm">Remove</button>
+                            </div>
+                            <video id="previewVideo" controls="" class="w-full max-w-md mx-auto rounded-lg">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div id="videoInfo" class="mt-2 text-sm text-gray-600 dark:text-gray-300"></div>
+                        </div>
+                    </div>
+
+                    <!-- Analyze Button -->
+                    <div class="mt-6">
+                        <button id="analyzeBtn" class="w-full bg-primary hover:bg-primary-dark text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled="">
+                            <span id="analyzeBtnText">Select a video to analyze</span>
+                            <svg id="analyzeBtnLoader" class="hidden animate-spin -mr-1 ml-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Analysis Results -->
+                <div id="analysisSection" class="hidden bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Analysis Results</h3>
+                    
+                    <!-- Loading State -->
+                    <div id="analysisLoading" class="text-center py-8">
+                        <svg class="animate-spin h-8 w-8 text-primary mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <p class="text-gray-600 dark:text-gray-300">Analyzing your badminton technique...</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">This may take a moment</p>
+                    </div>
+
+                    <!-- Results Content -->
+                    <div id="analysisResults" class="hidden">
+                        <div id="analysisContent" class="prose dark:prose-invert max-w-none">
+                            <!-- Analysis content will be inserted here -->
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+                            <button id="newAnalysisBtn" class="flex-1 bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                Analyze Another Video
+                            </button>
+                            <button id="saveAnalysisBtn" class="flex-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                Save Analysis
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Error State -->
+                    <div id="analysisError" class="hidden text-center py-8">
+                        <div class="text-red-500 mb-4">
+                            <svg class="h-12 w-12 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 mb-2">Analysis failed</p>
+                        <p id="errorMessage" class="text-sm text-gray-500 dark:text-gray-400 mb-4"></p>
+                        <button id="retryAnalysisBtn" class="bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                            Try Again
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tips Section -->
+                <div class="bg-gradient-to-r from-primary/10 to-blue-500/10 rounded-lg p-6">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">💡 Tips for Better Analysis</h3>
+                    <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-300">
+                        <div class="flex items-start space-x-2">
+                            <span class="text-primary">•</span>
+                            <span>Record from the side view to capture your full swing motion</span>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <span class="text-primary">•</span>
+                            <span>Ensure good lighting and clear video quality</span>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <span class="text-primary">•</span>
+                            <span>Include multiple shots in your video (clears, smashes, drops)</span>
+                        </div>
+                        <div class="flex items-start space-x-2">
+                            <span class="text-primary">•</span>
+                            <span>Keep the camera steady and focused on the player</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Dark mode detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // Global variables
+        let selectedVideo = null;
+        let isAnalyzing = false;
+
+        // DOM elements
+        const uploadArea = document.getElementById('uploadArea');
+        const videoInput = document.getElementById('videoInput');
+        const videoPreview = document.getElementById('videoPreview');
+        const previewVideo = document.getElementById('previewVideo');
+        const videoInfo = document.getElementById('videoInfo');
+        const removeVideoBtn = document.getElementById('removeVideo');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const analyzeBtnText = document.getElementById('analyzeBtnText');
+        const analyzeBtnLoader = document.getElementById('analyzeBtnLoader');
+        const analysisSection = document.getElementById('analysisSection');
+        const analysisLoading = document.getElementById('analysisLoading');
+        const analysisResults = document.getElementById('analysisResults');
+        const analysisContent = document.getElementById('analysisContent');
+        const analysisError = document.getElementById('analysisError');
+        const errorMessage = document.getElementById('errorMessage');
+        const newAnalysisBtn = document.getElementById('newAnalysisBtn');
+        const saveAnalysisBtn = document.getElementById('saveAnalysisBtn');
+        const retryAnalysisBtn = document.getElementById('retryAnalysisBtn');
+
+        // File upload handling
+        uploadArea.addEventListener('click', () => {
+            if (!isAnalyzing) {
+                videoInput.click();
+            }
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (!isAnalyzing) {
+                uploadArea.classList.add('border-primary', 'bg-primary/5');
+            }
+        });
+
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('border-primary', 'bg-primary/5');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('border-primary', 'bg-primary/5');
+            
+            if (!isAnalyzing && e.dataTransfer.files.length > 0) {
+                const file = e.dataTransfer.files[0];
+                if (file.type.startsWith('video/')) {
+                    handleVideoSelection(file);
+                } else {
+                    alert('Please select a video file.');
+                }
+            }
+        });
+
+        videoInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleVideoSelection(e.target.files[0]);
+            }
+        });
+
+        removeVideoBtn.addEventListener('click', () => {
+            clearVideoSelection();
+        });
+
+        function handleVideoSelection(file) {
+            selectedVideo = file;
+            
+            // Show video preview
+            const url = URL.createObjectURL(file);
+            previewVideo.src = url;
+            videoPreview.classList.remove('hidden');
+            
+            // Update video info
+            const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+            videoInfo.textContent = `${file.name} (${sizeInMB} MB)`;
+            
+            // Enable analyze button
+            analyzeBtn.disabled = false;
+            analyzeBtnText.textContent = 'Analyze Badminton Technique';
+            
+            // Hide previous analysis
+            analysisSection.classList.add('hidden');
+        }
+
+        function clearVideoSelection() {
+            selectedVideo = null;
+            videoPreview.classList.add('hidden');
+            previewVideo.src = '';
+            videoInfo.textContent = '';
+            analyzeBtn.disabled = true;
+            analyzeBtnText.textContent = 'Select a video to analyze';
+            videoInput.value = '';
+            analysisSection.classList.add('hidden');
+        }
+
+        // Register Poe handler for analysis
+        window.Poe.registerHandler("badminton-analysis", (result, context) => {
+            const msg = result.responses[0];
+
+            if (msg.status === "error") {
+                showAnalysisError("Analysis failed: " + (msg.statusText || "Unknown error"));
+            } else if (msg.status === "incomplete") {
+                // Update with streaming content
+                if (msg.content.trim()) {
+                    analysisLoading.classList.add('hidden');
+                    analysisResults.classList.remove('hidden');
+                    analysisContent.innerHTML = marked.parse(msg.content);
+                }
+            } else if (msg.status === "complete") {
+                // Final content
+                analysisLoading.classList.add('hidden');
+                analysisResults.classList.remove('hidden');
+                analysisContent.innerHTML = marked.parse(msg.content);
+                isAnalyzing = false;
+                updateAnalyzeButton();
+            }
+        });
+
+        analyzeBtn.addEventListener('click', async () => {
+            if (!selectedVideo || isAnalyzing) return;
+
+            isAnalyzing = true;
+            updateAnalyzeButton();
+            
+            // Show analysis section
+            analysisSection.classList.remove('hidden');
+            analysisLoading.classList.remove('hidden');
+            analysisResults.classList.add('hidden');
+            analysisError.classList.add('hidden');
+
+            try {
+                await window.Poe.sendUserMessage(
+                    "@Gemini-2.0-Flash Analyze this badminton video and provide detailed feedback on the player's technique. Please include: 1) Overall skill level assessment, 2) Technical analysis of strokes (footwork, racket position, body posture), 3) Strengths observed, 4) Areas for improvement, 5) Specific practice suggestions. Format your response with clear headings and be constructive in your feedback.",
+                    {
+                        attachments: [selectedVideo],
+                        handler: "badminton-analysis",
+                        stream: true,
+                        openChat: false
+                    }
+                );
+            } catch (err) {
+                showAnalysisError("Failed to start analysis: " + err.message);
+                isAnalyzing = false;
+                updateAnalyzeButton();
+            }
+        });
+
+        function updateAnalyzeButton() {
+            if (isAnalyzing) {
+                analyzeBtnText.textContent = 'Analyzing...';
+                analyzeBtnLoader.classList.remove('hidden');
+                analyzeBtn.disabled = true;
+            } else {
+                analyzeBtnText.textContent = selectedVideo ? 'Analyze Badminton Technique' : 'Select a video to analyze';
+                analyzeBtnLoader.classList.add('hidden');
+                analyzeBtn.disabled = !selectedVideo;
+            }
+        }
+
+        function showAnalysisError(message) {
+            analysisLoading.classList.add('hidden');
+            analysisResults.classList.add('hidden');
+            analysisError.classList.remove('hidden');
+            errorMessage.textContent = message;
+            isAnalyzing = false;
+            updateAnalyzeButton();
+        }
+
+        // Button event handlers
+        newAnalysisBtn.addEventListener('click', () => {
+            clearVideoSelection();
+            analysisSection.classList.add('hidden');
+        });
+
+        saveAnalysisBtn.addEventListener('click', () => {
+            const content = analysisContent.innerHTML;
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'badminton-analysis.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        retryAnalysisBtn.addEventListener('click', () => {
+            analyzeBtn.click();
+        });
+    </script>
+
+
+</body></html>
